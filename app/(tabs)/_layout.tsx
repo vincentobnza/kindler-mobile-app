@@ -1,35 +1,62 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { PlatformPressable } from "@react-navigation/elements";
+import * as Haptics from "expo-haptics";
+import { Tabs } from "expo-router";
+import { Platform } from "react-native";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { PRIMARY_NAV } from "@/constants/navigation";
+import { COLORS, FONTS } from "@/constants/theme";
+
+/** Haptic-on-press tab button for a more tactile, native feel. */
+function HapticTab(props: React.ComponentProps<typeof PlatformPressable>) {
+  return (
+    <PlatformPressable
+      {...props}
+      onPressIn={(event) => {
+        if (Platform.OS === "ios") {
+          void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }
+        props.onPressIn?.(event);
+      }}
+    />
+  );
+}
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
+        tabBarActiveTintColor: COLORS.foreground,
+        tabBarInactiveTintColor: COLORS.foreground,
+        tabBarStyle: {
+          backgroundColor: COLORS.card,
+          borderTopWidth: 0,
+          paddingHorizontal: 42,
+        },
+        tabBarLabelStyle: {
+          fontFamily: FONTS.sansMedium,
+          fontSize: 11,
+        },
+      }}
+    >
+      {PRIMARY_NAV.map((item) => (
+        <Tabs.Screen
+          key={item.name}
+          name={item.name}
+          options={{
+            title: item.label,
+            tabBarIcon: ({ color, focused, size }) => (
+              <Ionicons
+                name={focused ? item.activeIcon : item.icon}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      ))}
     </Tabs>
   );
 }

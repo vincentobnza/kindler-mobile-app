@@ -1,50 +1,93 @@
-# Welcome to your Expo app 👋
+# Kindler — Read more, beautifully
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The **Expo / React Native** edition of Kindler — a fast reading companion to
+discover, search and save books from the [Open Library](https://openlibrary.org).
+No account, no API key, no backend. A faithful native port of the web app's
+warm, editorial **paper & ink** design.
 
-## Get started
+## Stack
 
-1. Install dependencies
+Expo SDK 54 · React Native 0.81 (New Architecture) · TypeScript (strict) ·
+expo-router · TanStack Query · Zustand (+ AsyncStorage) · Reanimated ·
+expo-image · react-native-svg · `@expo/vector-icons`.
 
-   ```bash
-   npm install
-   ```
+Type: **Lexend** (UI/body) + **EB Garamond** (serif headings & reading).
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Getting started
 
 ```bash
-npm run reset-project
+# 1. Install
+npm install
+
+# 2. (optional) configure env — sensible Open Library defaults are used
+cp .env.example .env
+
+# 3. Run
+npm run start        # Expo dev server (press i / a, or scan in Expo Go)
+npm run ios          # iOS simulator
+npm run android      # Android emulator
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Scripts
 
-## Learn more
+| Script              | Description                          |
+| ------------------- | ------------------------------------ |
+| `npm run start`     | Start the Expo dev server            |
+| `npm run ios`       | Open on the iOS simulator            |
+| `npm run android`   | Open on the Android emulator         |
+| `npm run typecheck` | TypeScript (`tsc --noEmit`)          |
+| `npm run lint`      | ESLint (`eslint-config-expo`)        |
 
-To learn more about developing your project with Expo, look at the following resources:
+## Architecture
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Feature-based, mirroring the web app. **`app/` holds routes only**; all code
+lives in **`src/`** (imported via `@/`).
 
-## Join the community
+```text
+app/         expo-router routes (thin re-exports) + tab & modal config
+src/
+  providers/   Composition root — providers, query client
+  config/      Typed env access
+  constants/   theme tokens, routes, endpoints, query keys, labels, flags
+  types/       Shared domain + API types
+  lib/         Framework-agnostic helpers — http, format, hooks
+  components/  Cross-feature UI — ui / common / feedback / splash
+  layout/      App chrome — TopBar, Brand
+  features/    books · home · library (self-contained)
+```
 
-Join our community of developers creating universal apps.
+> ⚠️ Never create a `src/app` directory — expo-router treats it as the routes
+> root and it shadows the real `app/`. See [AGENTS.md](./AGENTS.md).
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+See **[AGENTS.md](./AGENTS.md)** for the full engineering guide and conventions.
+
+## Features
+
+- **Discover** (`features/home`) — an animated hero with a search entry point
+  plus curated, horizontally-scrolling subject shelves.
+- **Browse** (`features/books`) — param-driven, debounced live search over the
+  Open Library with covers, ratings, paging and loading / empty / error states.
+  The book detail opens as a **modal** with cover, description, subjects and a
+  "read online" link.
+- **Library** (`features/library`) — save books to read later, persisted
+  on-device via a Zustand store over AsyncStorage.
+
+## Design & performance
+
+Light-mode "paper & ink": warm paper (`#F7F4ED`), near-black ink, solid hairline
+borders, no shadows. Server state flows through typed services → `queryOptions`
+factories; client state lives in small Zustand stores. Lists are virtualized
+(`FlatList`), images cached via `expo-image`, queries cached/deduped via TanStack
+Query, and the **React Compiler** auto-memoizes components.
+
+## Splash
+
+A premium animated splash (`AnimatedSplash`, Reanimated): the wordmark reveals
+with fade + scale + rise, a hairline rule draws out, the tagline settles, then
+the scene fades away to the app. Honours "reduce motion".
+
+## Data & credits
+
+Book data and covers are provided by [Open Library](https://openlibrary.org), a
+project of the Internet Archive. Kindler is an independent reading companion and
+is not affiliated with Open Library or Amazon Kindle.
