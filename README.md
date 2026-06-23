@@ -57,9 +57,7 @@ src/
 ```
 
 > ⚠️ Never create a `src/app` directory — expo-router treats it as the routes
-> root and it shadows the real `app/`. See [AGENTS.md](./AGENTS.md).
-
-See **[AGENTS.md](./AGENTS.md)** for the full engineering guide and conventions.
+> root and it shadows the real `app/`.
 
 ## Features
 

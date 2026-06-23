@@ -78,7 +78,6 @@ tagline, then a fade-away hand-off. Honours "reduce motion".
 ## Architecture & conventions
 
 Feature-based. `app/` holds expo-router routes only; all code lives in `src/`.
-See **[AGENTS.md](./AGENTS.md)** for the full engineering guide.
 
 > ⚠️ Never create a `src/app` directory — expo-router treats it as the routes
 > root and it shadows the real `app/` (every route 404s with "Unmatched route").
