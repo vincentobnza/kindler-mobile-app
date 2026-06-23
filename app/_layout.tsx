@@ -24,7 +24,9 @@ import { COLORS, FONTS } from "@/constants/theme";
 import { UI_LABELS } from "@/constants/ui-labels";
 import { AppProviders } from "@/providers/AppProviders";
 import { AnimatedSplash } from "@/components/splash/AnimatedSplash";
+import { ToastHost } from "@/components/feedback/toast/ToastHost";
 import { useLibraryStore } from "@/features/library/stores/saved-books-store";
+import { OnboardingScreen } from "@/features/onboarding/screens/OnboardingScreen";
 
 // Keep the native splash up until our fonts are ready, then hand off to the
 // animated splash so there's no flash between the two.
@@ -47,6 +49,9 @@ function ModalCloseButton() {
 /** Max time to wait on store hydration before revealing the app regardless. */
 const HYDRATION_FALLBACK_MS = 2500;
 
+/** Minimum time the splash stays on screen, for a deliberate ~3s reveal. */
+const SPLASH_MIN_MS = 3000;
+
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Lexend_400Regular,
@@ -63,7 +68,10 @@ export default function RootLayout() {
 
   const hydrated = useLibraryStore((state) => state.hasHydrated);
   const [splashDone, setSplashDone] = useState(false);
+  // Onboarding is shown on every launch (not persisted), per product choice.
+  const [onboardingDone, setOnboardingDone] = useState(false);
   const [hydrationTimedOut, setHydrationTimedOut] = useState(false);
+  const [minSplashElapsed, setMinSplashElapsed] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -74,13 +82,23 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
+    const timer = setTimeout(() => setMinSplashElapsed(true), SPLASH_MIN_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     if (fontsLoaded) void SplashScreen.hideAsync();
   }, [fontsLoaded]);
 
   // Hold on the native splash until the custom fonts are available.
   if (!fontsLoaded) return null;
 
-  const appReady = fontsLoaded && (hydrated || hydrationTimedOut);
+  // Hold the splash until the app is ready AND the minimum ~3s has elapsed.
+  const appReady =
+    fontsLoaded && (hydrated || hydrationTimedOut) && minSplashElapsed;
+
+  // Show onboarding every launch, once the splash has handed off.
+  const showOnboarding = splashDone && !onboardingDone;
 
   return (
     <AppProviders>
@@ -113,6 +131,12 @@ export default function RootLayout() {
         />
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />
       </Stack>
+
+      <ToastHost />
+
+      {showOnboarding ? (
+        <OnboardingScreen onContinue={() => setOnboardingDone(true)} />
+      ) : null}
 
       {!splashDone ? (
         <AnimatedSplash ready={appReady} onFinish={() => setSplashDone(true)} />

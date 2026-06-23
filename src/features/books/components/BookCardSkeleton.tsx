@@ -4,9 +4,9 @@ import { SPACING } from "@/constants/theme"
 import { Skeleton } from "@/components/ui/Skeleton"
 
 /**
- * Loading placeholder matching the BookCard footprint to avoid layout shift:
- * a 2:3 cover, a two-line title block and a single author line, with the same
- * spacing rhythm as the real card.
+ * Loading placeholder matching the BookCard footprint exactly to avoid layout
+ * shift: a 2:3 cover, then a details block (same `gap: md` from the cover, same
+ * tight `gap: 2` within) with two title lines and an author line.
  */
 export function BookCardSkeleton() {
   return (
@@ -15,7 +15,7 @@ export function BookCardSkeleton() {
       <View style={styles.meta}>
         <Skeleton height={16} width="92%" />
         <Skeleton height={16} width="58%" />
-        <Skeleton height={12} width="40%" style={styles.author} />
+        <Skeleton height={12} width="40%" />
       </View>
     </View>
   )
@@ -27,9 +27,6 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   meta: {
-    gap: SPACING.xs + 2,
-  },
-  author: {
-    marginTop: 2,
+    gap: 2,
   },
 })

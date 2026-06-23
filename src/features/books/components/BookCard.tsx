@@ -1,45 +1,45 @@
-import { Ionicons } from "@expo/vector-icons"
-import * as Haptics from "expo-haptics"
-import { router } from "expo-router"
-import { Pressable, StyleSheet, View } from "react-native"
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { FEATURE_FLAGS } from "@/constants/feature-flags"
-import { buildPath } from "@/constants/routes"
-import { COLORS, RADIUS, SPACING, withAlpha } from "@/constants/theme"
-import { formatAuthors, formatRating } from "@/lib/format/book"
-import { Text } from "@/components/ui/Text"
-import { SaveButton } from "@/features/library/components/SaveButton"
+import { FEATURE_FLAGS } from "@/constants/feature-flags";
+import { buildPath } from "@/constants/routes";
+import { COLORS, RADIUS, SPACING, withAlpha } from "@/constants/theme";
+import { formatAuthors, formatRating } from "@/lib/format/book";
+import { Text } from "@/components/ui/Text";
+import { SaveButton } from "@/features/library/components/SaveButton";
 
-import { BookCover } from "./BookCover"
+import { BookCover } from "./BookCover";
 
 /**
  * Minimal data a card needs. Satisfied by both the `Book` search/shelf model
  * and the persisted `SavedBook`, so the library reuses this card directly.
  */
 export interface BookCardItem {
-  id: string
-  title: string
-  authors: string[]
-  coverId?: number
-  coverEdition?: string
-  firstPublishYear?: number
-  ratingsAverage?: number
-  hasFulltext?: boolean
+  id: string;
+  title: string;
+  authors: string[];
+  coverId?: number;
+  coverEdition?: string;
+  firstPublishYear?: number;
+  ratingsAverage?: number;
+  hasFulltext?: boolean;
 }
 
 /** Tappable, saveable cover card for a single book (grid item). */
 export function BookCard({ book }: { book: BookCardItem }) {
   const rating = FEATURE_FLAGS.bookRatings
     ? formatRating(book.ratingsAverage)
-    : null
+    : null;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={book.title}
       onPress={() => {
-        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-        router.push(buildPath.bookDetail(book.id))
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        router.push(buildPath.bookDetail(book.id));
       }}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
@@ -75,7 +75,7 @@ export function BookCard({ book }: { book: BookCardItem }) {
         ) : null}
       </View>
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     gap: 3,
     paddingHorizontal: SPACING.sm,
     paddingVertical: 2,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.none,
     backgroundColor: withAlpha(COLORS.card, 0.9),
   },
   meta: {
@@ -109,4 +109,4 @@ const styles = StyleSheet.create({
   year: {
     color: withAlpha(COLORS.mutedForeground, 0.8),
   },
-})
+});

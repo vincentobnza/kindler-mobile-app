@@ -38,10 +38,10 @@ src/           all application code (feature-based, imported via @/)
 app/
   _layout.tsx          Root stack: fonts, splash gate, providers, modal config
   (tabs)/
-    _layout.tsx        Bottom tab bar (Discover / Browse / Library)
-    index.tsx          → HomeScreen
-    browse.tsx         → BrowseScreen
+    _layout.tsx        Bottom tab bar (Discover / Library)
+    index.tsx          → HomeScreen (Discover)
     library.tsx        → LibraryScreen
+  browse.tsx           → BrowseScreen (presented as a MODAL)
   book/[id].tsx        → BookDetailScreen (presented as a MODAL)
   +not-found.tsx
 
@@ -139,12 +139,17 @@ component. Extract to `src/constants/`:
 
 ## 7. Navigation
 
-- Primary nav is the native **bottom tab bar** (`app/(tabs)/_layout.tsx`),
-  driven by `PRIMARY_NAV`, styled to the palette, with haptic tab presses.
-- **Book detail is a modal.** `app/book/[id].tsx` is configured with
-  `presentation: "modal"` in the root stack and a close (`✕`) button in the
-  header — it slides up over the tabs. Tapping a `BookCard`/shelf item pushes it
-  (with a light haptic).
+- Primary nav is the native **bottom tab bar** (`app/(tabs)/_layout.tsx`) with
+  two tabs — **Discover** and **Library** — driven by `PRIMARY_NAV`, styled to
+  the palette, with haptic tab presses. Both tabs replay a modal-style slide-up
+  entrance on focus (`SlideUpOnFocus` via `Screen animateOnFocus`).
+- **Browse is a modal.** `app/browse.tsx` is a root-stack screen with
+  `presentation: "modal"` and a close button; it is opened by tapping the search
+  bar on Discover (`router.navigate(buildPath.browse())`), and hosts the live,
+  debounced search. Shelf "View all" and the empty-library CTA open it with a
+  `?q=` param.
+- **Book detail is a modal.** `app/book/[id].tsx` (`presentation: "modal"`,
+  close button). Tapping a `BookCard`/shelf item pushes it (with a light haptic).
 - Build hrefs with `buildPath` (object form for dynamic/query routes so they
   satisfy typed routes); never hardcode a path.
 
@@ -160,6 +165,10 @@ component. Extract to `src/constants/`:
   avoid manual `useMemo`/`useCallback`/`memo` unless profiling demands it.
 - Tune query freshness/caching via `app-config.ts`; debounce live search;
   request the cover size that matches the surface (`M` grid/shelf, `L` detail).
+- **Toasts:** call `showToast({ message, icon })` (`components/feedback/toast`).
+  A single global `ToastHost` renders an elegant bottom pill with a hairline
+  border, above everything (even modals, via `FullWindowOverlay` on iOS). Used
+  for save/remove and library-cleared confirmations.
 
 ## 9. Splash
 

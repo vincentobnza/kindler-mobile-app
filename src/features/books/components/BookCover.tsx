@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   cover: {
     width: "100%",
     aspectRatio: 2 / 3,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.none,
     backgroundColor: COLORS.muted,
   },
   placeholder: {

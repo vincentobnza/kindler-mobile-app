@@ -34,4 +34,15 @@ export const UI_LABELS = {
     noCover: "No cover available",
     noDescription: "No description available for this book yet.",
   },
+  toasts: {
+    saved: "Saved to your library",
+    removed: "Removed from your library",
+    cleared: "Library cleared",
+    readingOnline: "Opening on Open Library…",
+  },
+  onboarding: {
+    subtitle:
+      "Discover, search and save books from the Open Library — a calm, paper-inspired place to find your next read.",
+    continue: "Continue",
+  },
 } as const

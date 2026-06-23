@@ -1,33 +1,39 @@
-import { Ionicons } from "@expo/vector-icons"
-import * as WebBrowser from "expo-web-browser"
-import { ScrollView, StyleSheet, View } from "react-native"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { Ionicons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { BORDER_WIDTH, COLORS, LAYOUT, RADIUS, SPACING } from "@/constants/theme"
-import { UI_LABELS } from "@/constants/ui-labels"
-import { formatAuthors } from "@/lib/format/book"
-import { ErrorState } from "@/components/feedback/ErrorState"
-import { LoadingSpinner } from "@/components/feedback/LoadingSpinner"
-import { Button } from "@/components/ui/Button"
-import { Text } from "@/components/ui/Text"
-import { SaveButton } from "@/features/library/components/SaveButton"
+import {
+  BORDER_WIDTH,
+  COLORS,
+  LAYOUT,
+  RADIUS,
+  SPACING,
+} from "@/constants/theme";
+import { UI_LABELS } from "@/constants/ui-labels";
+import { formatAuthors } from "@/lib/format/book";
+import { ErrorState } from "@/components/feedback/ErrorState";
+import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
+import { Button } from "@/components/ui/Button";
+import { Text } from "@/components/ui/Text";
+import { SaveButton } from "@/features/library/components/SaveButton";
 
-import { BookCover } from "../components/BookCover"
-import { useBook } from "../hooks/useBook"
+import { BookCover } from "../components/BookCover";
+import { useBook } from "../hooks/useBook";
 
-const MAX_SUBJECTS = 12
+const MAX_SUBJECTS = 12;
 
 /** Single-book detail: cover, description, subjects, save + read actions. */
 export function BookDetailScreen({ bookId }: { bookId: string }) {
-  const insets = useSafeAreaInsets()
-  const { data: book, isPending, isError, error, refetch } = useBook(bookId)
+  const insets = useSafeAreaInsets();
+  const { data: book, isPending, isError, error, refetch } = useBook(bookId);
 
   if (isError) {
     return (
       <View style={styles.centered}>
         <ErrorState error={error} onRetry={() => refetch()} />
       </View>
-    )
+    );
   }
 
   if (isPending || !book) {
@@ -35,11 +41,11 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
       <View style={styles.centered}>
         <LoadingSpinner label={UI_LABELS.states.loading} />
       </View>
-    )
+    );
   }
 
-  const authors = formatAuthors(book.authors, 4)
-  const subjects = book.subjects.slice(0, MAX_SUBJECTS)
+  const authors = formatAuthors(book.authors, 4);
+  const subjects = book.subjects.slice(0, MAX_SUBJECTS);
 
   return (
     <ScrollView
@@ -51,7 +57,12 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
       ]}
     >
       <View style={styles.coverWrap}>
-        <BookCover title={book.title} coverId={book.coverId} size="L" priority />
+        <BookCover
+          title={book.title}
+          coverId={book.coverId}
+          size="L"
+          priority
+        />
       </View>
 
       <View style={styles.titleBlock}>
@@ -65,7 +76,11 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
 
       {book.firstPublishDate ? (
         <View style={styles.metaRow}>
-          <Ionicons name="calendar-outline" size={15} color={COLORS.mutedForeground} />
+          <Ionicons
+            name="calendar-outline"
+            size={15}
+            color={COLORS.mutedForeground}
+          />
           <Text variant="small" color="mutedForeground">
             First published {book.firstPublishDate}
           </Text>
@@ -86,7 +101,9 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
           variant="outline"
           label={UI_LABELS.actions.readOnline}
           onPress={() => WebBrowser.openBrowserAsync(book.openLibraryUrl)}
-          leftIcon={<Ionicons name="open-outline" size={16} color={COLORS.foreground} />}
+          leftIcon={
+            <Ionicons name="open-outline" size={16} color={COLORS.foreground} />
+          }
         />
       </View>
 
@@ -100,7 +117,11 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
       {subjects.length > 0 ? (
         <View style={styles.section}>
           <View style={styles.subjectsHeading}>
-            <Ionicons name="pricetag-outline" size={16} color={COLORS.mutedForeground} />
+            <Ionicons
+              name="pricetag-outline"
+              size={16}
+              color={COLORS.mutedForeground}
+            />
             <Text variant="h3">Subjects</Text>
           </View>
           <View style={styles.tags}>
@@ -115,7 +136,7 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
         </View>
       ) : null}
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -172,9 +193,9 @@ const styles = StyleSheet.create({
   tag: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs + 2,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.full,
     borderWidth: BORDER_WIDTH,
     borderColor: COLORS.border,
     backgroundColor: COLORS.card,
   },
-})
+});

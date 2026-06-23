@@ -1,32 +1,37 @@
-import { Ionicons } from "@expo/vector-icons"
-import * as Haptics from "expo-haptics"
-import { Pressable, StyleSheet } from "react-native"
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { Pressable, StyleSheet } from "react-native";
 
-import { BORDER_WIDTH, COLORS, RADIUS } from "@/constants/theme"
-import { UI_LABELS } from "@/constants/ui-labels"
-import { Button } from "@/components/ui/Button"
+import { BORDER_WIDTH, COLORS, RADIUS } from "@/constants/theme";
+import { UI_LABELS } from "@/constants/ui-labels";
+import { showToast } from "@/components/feedback/toast/toast-store";
+import { Button } from "@/components/ui/Button";
 
-import { useLibraryStore } from "../stores/saved-books-store"
-import type { SaveableBook } from "../types"
+import { useLibraryStore } from "../stores/saved-books-store";
+import type { SaveableBook } from "../types";
 
 interface SaveButtonProps {
-  book: SaveableBook
+  book: SaveableBook;
   /** Render a full labelled button (detail screen) instead of an icon button. */
-  withLabel?: boolean
+  withLabel?: boolean;
 }
 
 /** Toggles a book's saved status. Reads its own state from the store. */
 export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
-  const isSaved = useLibraryStore((state) => Boolean(state.items[book.id]))
-  const toggle = useLibraryStore((state) => state.toggle)
+  const isSaved = useLibraryStore((state) => Boolean(state.items[book.id]));
+  const toggle = useLibraryStore((state) => state.toggle);
 
   const label = isSaved
     ? UI_LABELS.actions.removeFromLibrary
-    : UI_LABELS.actions.saveToLibrary
+    : UI_LABELS.actions.saveToLibrary;
 
   function handleToggle() {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    toggle(book)
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const nowSaved = toggle(book);
+    showToast({
+      message: nowSaved ? UI_LABELS.toasts.saved : UI_LABELS.toasts.removed,
+      icon: nowSaved ? "bookmark" : "bookmark-outline",
+    });
   }
 
   if (withLabel) {
@@ -40,11 +45,13 @@ export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
             size={16}
-            color={isSaved ? COLORS.secondaryForeground : COLORS.primaryForeground}
+            color={
+              isSaved ? COLORS.secondaryForeground : COLORS.primaryForeground
+            }
           />
         }
       />
-    )
+    );
   }
 
   return (
@@ -62,14 +69,14 @@ export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
         color={COLORS.foreground}
       />
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   iconButton: {
     width: 32,
     height: 32,
-    borderRadius: RADIUS.sm,
+    borderRadius: RADIUS.full,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: BORDER_WIDTH,
@@ -79,4 +86,4 @@ const styles = StyleSheet.create({
   pressed: {
     backgroundColor: COLORS.accent,
   },
-})
+});

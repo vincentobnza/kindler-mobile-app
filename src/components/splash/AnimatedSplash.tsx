@@ -1,5 +1,5 @@
-import { useEffect } from "react"
-import { AccessibilityInfo, StyleSheet, View } from "react-native"
+import { useEffect } from "react";
+import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
   runOnJS,
@@ -7,24 +7,22 @@ import Animated, {
   useSharedValue,
   withDelay,
   withTiming,
-} from "react-native-reanimated"
+} from "react-native-reanimated";
 
-import { SITE } from "@/constants/site"
-import { BRAND_INK, COLORS, FONTS, SPACING } from "@/constants/theme"
-import { splitOnce } from "@/lib/format/text"
-import { LoadingSpinner } from "@/components/feedback/LoadingSpinner"
-import { Text } from "@/components/ui/Text"
+import { SITE } from "@/constants/site";
+import { BRAND_INK, COLORS, FONTS, SPACING } from "@/constants/theme";
 
 interface AnimatedSplashProps {
   /** Called once the exit animation has fully played out. */
-  onFinish: () => void
+  onFinish: () => void;
   /** Hold the splash until the app is ready (fonts + store hydration). */
-  ready: boolean
+  ready: boolean;
 }
 
-const EASE_OUT = Easing.out(Easing.cubic)
-const RULE_WIDTH = 64
-const HOLD_MS = 650
+const EASE_OUT = Easing.out(Easing.cubic);
+const RULE_WIDTH = 64;
+// Duration is controlled by the root layout's ~3s gate; exit as soon as ready.
+const HOLD_MS = 0;
 
 /**
  * Premium animated splash. The wordmark reveals with a fade + scale + rise, a
@@ -32,76 +30,86 @@ const HOLD_MS = 650
  * fades up and away to hand off to the app. Honours "reduce motion".
  */
 export function AnimatedSplash({ onFinish, ready }: AnimatedSplashProps) {
-  const tagline = splitOnce(SITE.tagline, SITE.taglineEmphasis)
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.92);
+  const logoY = useSharedValue(10);
+  const ruleScale = useSharedValue(0);
+  const taglineOpacity = useSharedValue(0);
+  const taglineY = useSharedValue(8);
+  const loaderOpacity = useSharedValue(0);
 
-  const logoOpacity = useSharedValue(0)
-  const logoScale = useSharedValue(0.92)
-  const logoY = useSharedValue(10)
-  const ruleScale = useSharedValue(0)
-  const taglineOpacity = useSharedValue(0)
-  const taglineY = useSharedValue(8)
-  const loaderOpacity = useSharedValue(0)
-
-  const containerOpacity = useSharedValue(1)
-  const containerScale = useSharedValue(1)
+  const containerOpacity = useSharedValue(1);
+  const containerScale = useSharedValue(1);
 
   // Entrance — runs once on mount.
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
     AccessibilityInfo.isReduceMotionEnabled().then((reduce) => {
-      if (cancelled) return
+      if (cancelled) return;
       if (reduce) {
-        logoOpacity.value = withTiming(1, { duration: 200 })
-        logoScale.value = 1
-        logoY.value = 0
-        ruleScale.value = 1
-        taglineOpacity.value = withTiming(1, { duration: 200 })
-        taglineY.value = 0
-        loaderOpacity.value = withTiming(1, { duration: 200 })
-        return
+        logoOpacity.value = withTiming(1, { duration: 200 });
+        logoScale.value = 1;
+        logoY.value = 0;
+        ruleScale.value = 1;
+        taglineOpacity.value = withTiming(1, { duration: 200 });
+        taglineY.value = 0;
+        loaderOpacity.value = withTiming(1, { duration: 200 });
+        return;
       }
-      logoOpacity.value = withTiming(1, { duration: 600, easing: EASE_OUT })
-      logoScale.value = withTiming(1, { duration: 600, easing: EASE_OUT })
-      logoY.value = withTiming(0, { duration: 600, easing: EASE_OUT })
-      ruleScale.value = withDelay(380, withTiming(1, { duration: 520, easing: EASE_OUT }))
-      taglineOpacity.value = withDelay(320, withTiming(1, { duration: 520 }))
-      taglineY.value = withDelay(320, withTiming(0, { duration: 520, easing: EASE_OUT }))
-      loaderOpacity.value = withDelay(620, withTiming(1, { duration: 420 }))
-    })
+      logoOpacity.value = withTiming(1, { duration: 600, easing: EASE_OUT });
+      logoScale.value = withTiming(1, { duration: 600, easing: EASE_OUT });
+      logoY.value = withTiming(0, { duration: 600, easing: EASE_OUT });
+      ruleScale.value = withDelay(
+        380,
+        withTiming(1, { duration: 520, easing: EASE_OUT }),
+      );
+      taglineOpacity.value = withDelay(320, withTiming(1, { duration: 520 }));
+      taglineY.value = withDelay(
+        320,
+        withTiming(0, { duration: 520, easing: EASE_OUT }),
+      );
+      loaderOpacity.value = withDelay(620, withTiming(1, { duration: 420 }));
+    });
     return () => {
-      cancelled = true
-    }
-  }, [logoOpacity, logoScale, logoY, ruleScale, taglineOpacity, taglineY, loaderOpacity])
+      cancelled = true;
+    };
+  }, [
+    logoOpacity,
+    logoScale,
+    logoY,
+    ruleScale,
+    taglineOpacity,
+    taglineY,
+    loaderOpacity,
+  ]);
 
   // Exit — plays once the app reports ready.
   useEffect(() => {
-    if (!ready) return
+    if (!ready) return;
     containerOpacity.value = withDelay(
       HOLD_MS,
-      withTiming(0, { duration: 460, easing: Easing.in(Easing.cubic) }, (finished) => {
-        if (finished) runOnJS(onFinish)()
-      })
-    )
+      withTiming(
+        0,
+        { duration: 460, easing: Easing.in(Easing.cubic) },
+        (finished) => {
+          if (finished) runOnJS(onFinish)();
+        },
+      ),
+    );
     containerScale.value = withDelay(
       HOLD_MS,
-      withTiming(1.04, { duration: 460, easing: Easing.in(Easing.cubic) })
-    )
-  }, [ready, containerOpacity, containerScale, onFinish])
+      withTiming(1.04, { duration: 460, easing: Easing.in(Easing.cubic) }),
+    );
+  }, [ready, containerOpacity, containerScale, onFinish]);
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: containerOpacity.value,
     transform: [{ scale: containerScale.value }],
-  }))
+  }));
   const logoStyle = useAnimatedStyle(() => ({
     opacity: logoOpacity.value,
     transform: [{ scale: logoScale.value }, { translateY: logoY.value }],
-  }))
-  const ruleStyle = useAnimatedStyle(() => ({ transform: [{ scaleX: ruleScale.value }] }))
-  const taglineStyle = useAnimatedStyle(() => ({
-    opacity: taglineOpacity.value,
-    transform: [{ translateY: taglineY.value }],
-  }))
-  const loaderStyle = useAnimatedStyle(() => ({ opacity: loaderOpacity.value }))
+  }));
 
   return (
     <Animated.View style={[styles.fill, containerStyle]} pointerEvents="none">
@@ -109,25 +117,9 @@ export function AnimatedSplash({ onFinish, ready }: AnimatedSplashProps) {
         <Animated.Text style={[styles.wordmark, logoStyle]}>
           {SITE.name}.
         </Animated.Text>
-
-        <Animated.View style={[styles.rule, ruleStyle]} />
-
-        <Animated.View style={taglineStyle}>
-          <Text variant="body" color="mutedForeground" align="center">
-            {tagline.before}
-            <Text variant="body" color="mutedForeground" italic>
-              {tagline.match}
-            </Text>
-            {tagline.after}
-          </Text>
-        </Animated.View>
       </View>
-
-      <Animated.View style={[styles.loader, loaderStyle]}>
-        <LoadingSpinner />
-      </Animated.View>
     </Animated.View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -157,4 +149,4 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: SPACING["5xl"],
   },
-})
+});

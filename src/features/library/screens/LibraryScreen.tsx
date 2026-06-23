@@ -1,10 +1,9 @@
-import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
-import { Alert, StyleSheet, View } from "react-native"
+import { StyleSheet, View } from "react-native"
 
 import { STATE_IMAGES } from "@/constants/assets"
 import { buildPath } from "@/constants/routes"
-import { COLORS, LAYOUT, SPACING } from "@/constants/theme"
+import { LAYOUT, SPACING } from "@/constants/theme"
 import { UI_LABELS } from "@/constants/ui-labels"
 import { PageHeader } from "@/components/common/PageHeader"
 import { Screen } from "@/components/common/Screen"
@@ -17,39 +16,16 @@ import { useLibrary } from "../hooks/useLibrary"
 
 /** Library — books saved to read later, persisted on-device. */
 export function LibraryScreen() {
-  const { list, count, clear } = useLibrary()
+  const { list, count } = useLibrary()
 
   const description =
     count > 0
       ? `${count} saved book${count === 1 ? "" : "s"}, kept on this device.`
       : "Books you save are kept locally on this device."
 
-  function confirmClear() {
-    Alert.alert("Clear library?", "This removes every saved book.", [
-      { text: UI_LABELS.actions.back, style: "cancel" },
-      { text: UI_LABELS.actions.clearAll, style: "destructive", onPress: clear },
-    ])
-  }
-
   const header = (
     <View style={styles.header}>
-      <PageHeader
-        title="My library"
-        description={description}
-        actions={
-          count > 0 ? (
-            <Button
-              variant="destructive"
-              size="sm"
-              label={UI_LABELS.actions.clearAll}
-              onPress={confirmClear}
-              leftIcon={
-                <Ionicons name="trash-outline" size={15} color={COLORS.destructive} />
-              }
-            />
-          ) : undefined
-        }
-      />
+      <PageHeader title="My library" description={description} />
     </View>
   )
 
@@ -85,6 +61,7 @@ export function LibraryScreen() {
 
 const styles = StyleSheet.create({
   header: {
+    paddingVertical: SPACING["2xl"],
     paddingBottom: SPACING.lg,
   },
   headerStandalone: {

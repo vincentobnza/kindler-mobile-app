@@ -77,12 +77,15 @@ export const SPACING = {
 } as const
 
 /**
- * Corner radii. The mobile app uses **sharp, square corners** everywhere for an
- * elegant, editorial feel — images, buttons, cards and badges are all crisp
- * (0). The lone exception is the **search bar**, which uses `full` (a pill).
+ * Corner radii. The mobile app is editorial and crisp: surfaces (images, cards,
+ * badges) are **sharp** (`none`). CTA buttons get a subtle `sm` rounding; the
+ * search bar is a `full` pill. Non-monotonic by design — most tokens are 0.
  */
 export const RADIUS = {
-  sm: 0,
+  /** Sharp — images, cards, badges. */
+  none: 0,
+  /** Subtle rounding for CTA buttons. */
+  sm: 6,
   md: 0,
   lg: 0,
   xl: 0,
@@ -90,13 +93,29 @@ export const RADIUS = {
   full: 9999,
 } as const
 
-/** Hairline border width — the design is border-led, never shadow-led. */
+/** Hairline border width — surfaces are border-led, not shadow-led. */
 export const BORDER_WIDTH = 1
+
+/**
+ * Elevation presets. The app is intentionally flat; shadows are reserved for
+ * genuinely floating overlays (e.g. the toast) where lift aids legibility.
+ */
+export const SHADOW = {
+  floating: {
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    elevation: 10,
+  },
+} as const
 
 /** Layout metrics. Content is capped (like the web's `max-w-5xl`) for tablets. */
 export const LAYOUT = {
   screenPaddingX: 16,
   maxContentWidth: 720,
+  /** Approx. bottom tab bar content height (excl. safe-area inset). */
+  tabBarHeight: 49,
 } as const
 
 /**

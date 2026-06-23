@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   solid: {
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.sm,
   },
   label: {
     fontSize: TYPOGRAPHY.label.fontSize,
