@@ -9,7 +9,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 
-import { COLORS, SPACING } from "@/constants/theme"
+import { SPACING } from "@/constants/theme"
+import { useTheme } from "@/theme"
 import { Text } from "@/components/ui/Text"
 
 const BOXES = [0, 1, 2]
@@ -19,6 +20,7 @@ const DURATION = 450
 
 /** A single ink box that rises and brightens, offset by its index. */
 function PixelBox({ index }: { index: number }) {
+  const { colors } = useTheme()
   const progress = useSharedValue(0)
 
   useEffect(() => {
@@ -37,7 +39,11 @@ function PixelBox({ index }: { index: number }) {
     transform: [{ translateY: -progress.value * RISE }],
   }))
 
-  return <Animated.View style={[styles.box, animatedStyle]} />
+  return (
+    <Animated.View
+      style={[styles.box, { backgroundColor: colors.foreground }, animatedStyle]}
+    />
+  )
 }
 
 interface LoadingSpinnerProps {
@@ -79,6 +85,5 @@ const styles = StyleSheet.create({
   box: {
     width: BOX_SIZE,
     height: BOX_SIZE,
-    backgroundColor: COLORS.foreground,
   },
 })

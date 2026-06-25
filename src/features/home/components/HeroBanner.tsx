@@ -7,13 +7,14 @@ import { buildPath } from "@/constants/routes";
 import { SITE } from "@/constants/site";
 import {
   BORDER_WIDTH,
-  COLORS,
   FONTS,
   LAYOUT,
   RADIUS,
   SPACING,
   withAlpha,
+  type ThemeColors,
 } from "@/constants/theme";
+import { useTheme, useThemedStyles } from "@/theme";
 import { UI_LABELS } from "@/constants/ui-labels";
 import { useTypewriter } from "@/lib/hooks/useTypewriter";
 import { splitOnce } from "@/lib/format/text";
@@ -33,6 +34,8 @@ const STAGGER = 90;
 
 /** Animated Discover hero. The search bar opens the Browse modal on tap. */
 export function HeroBanner() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const typed = useTypewriter(PLACEHOLDER_PHRASES);
   const tagline = splitOnce(SITE.tagline, SITE.taglineEmphasis);
 
@@ -92,7 +95,7 @@ export function HeroBanner() {
             <Ionicons
               name="search"
               size={18}
-              color={COLORS.primaryForeground}
+              color={colors.primaryForeground}
             />
           </View>
         </Pressable>
@@ -101,57 +104,58 @@ export function HeroBanner() {
   );
 }
 
-const styles = StyleSheet.create({
-  section: {
-    alignItems: "center",
-    gap: SPACING.xl,
-    paddingVertical: SPACING["4xl"],
-    paddingHorizontal: LAYOUT.screenPaddingX,
-  },
-  badge: {
-    alignSelf: "center",
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.full,
-    borderWidth: BORDER_WIDTH,
-    borderColor: COLORS.border,
-    backgroundColor: withAlpha(COLORS.background, 0.6),
-  },
-  description: {
-    maxWidth: 420,
-  },
-  searchWrap: {
-    width: "100%",
-    maxWidth: 480,
-    marginTop: SPACING.xs,
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: 56,
-    paddingLeft: SPACING.xl,
-    paddingRight: SPACING.xs,
-    borderRadius: RADIUS.full,
-    borderWidth: BORDER_WIDTH,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-  },
-  pressed: {
-    backgroundColor: COLORS.accent,
-  },
-  placeholder: {
-    flex: 1,
-    fontFamily: FONTS.serif,
-    fontSize: 17,
-    letterSpacing: 0,
-  },
-  submit: {
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.full,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.primary,
-  },
-});
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    section: {
+      alignItems: "center",
+      gap: SPACING.xl,
+      paddingVertical: SPACING["4xl"],
+      paddingHorizontal: LAYOUT.screenPaddingX,
+    },
+    badge: {
+      alignSelf: "center",
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.xs,
+      borderRadius: RADIUS.full,
+      borderWidth: BORDER_WIDTH,
+      borderColor: c.border,
+      backgroundColor: withAlpha(c.background, 0.6),
+    },
+    description: {
+      maxWidth: 420,
+    },
+    searchWrap: {
+      width: "100%",
+      maxWidth: 480,
+      marginTop: SPACING.xs,
+    },
+    searchBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      height: 56,
+      paddingLeft: SPACING.xl,
+      paddingRight: SPACING.xs,
+      borderRadius: RADIUS.full,
+      borderWidth: BORDER_WIDTH,
+      borderColor: c.border,
+      backgroundColor: c.card,
+    },
+    pressed: {
+      backgroundColor: c.accent,
+    },
+    placeholder: {
+      flex: 1,
+      fontFamily: FONTS.serif,
+      fontSize: 17,
+      letterSpacing: 0,
+    },
+    submit: {
+      width: 44,
+      height: 44,
+      borderRadius: RADIUS.full,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c.primary,
+    },
+  });

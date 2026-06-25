@@ -5,7 +5,8 @@ import { Tabs } from "expo-router";
 import { Platform } from "react-native";
 
 import { PRIMARY_NAV } from "@/constants/navigation";
-import { COLORS, FONTS } from "@/constants/theme";
+import { FONTS } from "@/constants/theme";
+import { useTheme } from "@/theme";
 
 /** Haptic-on-press tab button for a more tactile, native feel. */
 function HapticTab(props: React.ComponentProps<typeof PlatformPressable>) {
@@ -23,15 +24,17 @@ function HapticTab(props: React.ComponentProps<typeof PlatformPressable>) {
 }
 
 export default function TabLayout() {
+  const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: COLORS.foreground,
-        tabBarInactiveTintColor: COLORS.foreground,
+        tabBarActiveTintColor: colors.foreground,
+        tabBarInactiveTintColor: colors.foreground,
         tabBarStyle: {
-          backgroundColor: COLORS.card,
+          backgroundColor: colors.card,
           borderTopWidth: 0,
           paddingHorizontal: 42,
         },

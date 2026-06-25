@@ -11,12 +11,13 @@ import {
 
 import {
   BORDER_WIDTH,
-  COLORS,
   FONTS,
   RADIUS,
   SPACING,
   withAlpha,
+  type ThemeColors,
 } from "@/constants/theme"
+import { useTheme, useThemedStyles } from "@/theme"
 
 export interface InputProps extends TextInputProps {
   /** Slot rendered before the field (e.g. a search icon). */
@@ -49,6 +50,8 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
   },
   ref
 ) {
+  const { colors } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const [focused, setFocused] = useState(false)
 
   return (
@@ -63,9 +66,9 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
       {leftSlot ? <View style={styles.slot}>{leftSlot}</View> : null}
       <TextInput
         ref={ref}
-        placeholderTextColor={withAlpha(COLORS.mutedForeground, 0.5)}
-        selectionColor={COLORS.primary}
-        cursorColor={COLORS.primary}
+        placeholderTextColor={withAlpha(colors.mutedForeground, 0.5)}
+        selectionColor={colors.primary}
+        cursorColor={colors.primary}
         style={[styles.input, serif && styles.serif, style]}
         onFocus={(event) => {
           setFocused(true)
@@ -82,13 +85,14 @@ export const Input = forwardRef<RNTextInput, InputProps>(function Input(
   )
 })
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.background,
+    backgroundColor: c.background,
     borderWidth: BORDER_WIDTH,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     paddingHorizontal: SPACING.md,
   },
   squared: {
@@ -99,15 +103,15 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: RADIUS.full,
     paddingHorizontal: SPACING.xl,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
   },
   focused: {
-    borderColor: COLORS.ring,
-    backgroundColor: COLORS.card,
+    borderColor: c.ring,
+    backgroundColor: c.card,
   },
   input: {
     flex: 1,
-    color: COLORS.foreground,
+    color: c.foreground,
     fontFamily: FONTS.sans,
     fontSize: 16,
     letterSpacing: -0.48,
@@ -122,4 +126,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-})
+  })

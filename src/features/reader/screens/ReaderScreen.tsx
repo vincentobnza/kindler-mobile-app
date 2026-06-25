@@ -15,7 +15,13 @@ import {
   READER_CHARS_PER_SECTION,
   READER_FONT_SCALE,
 } from "@/constants/app-config";
-import { COLORS, LAYOUT, RADIUS, SPACING } from "@/constants/theme";
+import {
+  LAYOUT,
+  RADIUS,
+  SPACING,
+  type ThemeColors,
+} from "@/constants/theme";
+import { useTheme, useThemedStyles } from "@/theme";
 import { UI_LABELS } from "@/constants/ui-labels";
 import { formatAuthors } from "@/lib/format/book";
 import { ApiError } from "@/lib/http/api-error";
@@ -34,6 +40,8 @@ import type { BookBlock } from "../types";
 
 export function ReaderScreen({ bookId }: { bookId: string }) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const book = useBook(bookId);
   const text = useBookText(bookId);
 
@@ -92,7 +100,7 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
         hitSlop={10}
         style={styles.backButton}
       >
-        <Ionicons name="chevron-back" size={22} color={COLORS.foreground} />
+        <Ionicons name="chevron-back" size={22} color={colors.foreground} />
         <Text variant="label">{UI_LABELS.actions.back}</Text>
       </Pressable>
 
@@ -157,7 +165,7 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
                       <Ionicons
                         name="open-outline"
                         size={16}
-                        color={COLORS.foreground}
+                        color={colors.foreground}
                       />
                     }
                   />
@@ -254,10 +262,11 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: c.background,
     width: "100%",
     maxWidth: LAYOUT.maxContentWidth,
     alignSelf: "center",
@@ -288,13 +297,13 @@ const styles = StyleSheet.create({
   progressTrack: {
     height: 3,
     marginHorizontal: LAYOUT.screenPaddingX,
-    backgroundColor: COLORS.muted,
+    backgroundColor: c.muted,
     borderRadius: RADIUS.full,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: COLORS.foreground,
+    backgroundColor: c.foreground,
   },
   list: {
     flex: 1,
@@ -312,4 +321,4 @@ const styles = StyleSheet.create({
   footer: {
     paddingTop: SPACING.lg,
   },
-});
+  });

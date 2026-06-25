@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 
-import { COLORS, RADIUS } from "@/constants/theme"
+import { RADIUS } from "@/constants/theme"
+import { useTheme } from "@/theme"
 
 interface SkeletonProps {
   width?: DimensionValue
@@ -27,6 +28,7 @@ export function Skeleton({
   aspectRatio,
   style,
 }: SkeletonProps) {
+  const { colors } = useTheme()
   const opacity = useSharedValue(0.5)
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export function Skeleton({
           height,
           aspectRatio,
           borderRadius: radius,
-          backgroundColor: COLORS.muted,
+          backgroundColor: colors.muted,
         },
         animatedStyle,
         style,

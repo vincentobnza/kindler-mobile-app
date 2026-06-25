@@ -2,13 +2,15 @@ import { router } from "expo-router"
 import { StyleSheet, View } from "react-native"
 
 import { ROUTE_PATHS } from "@/constants/routes"
-import { COLORS, SPACING, withAlpha } from "@/constants/theme"
+import { SPACING, withAlpha, type ThemeColors } from "@/constants/theme"
+import { useThemedStyles } from "@/theme"
 import { UI_LABELS } from "@/constants/ui-labels"
 import { Screen } from "@/components/common/Screen"
 import { Button } from "@/components/ui/Button"
 import { Text } from "@/components/ui/Text"
 
 export default function NotFoundScreen() {
+  const styles = useThemedStyles(makeStyles)
   return (
     <Screen>
       <View style={styles.container}>
@@ -29,23 +31,24 @@ export default function NotFoundScreen() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: SPACING.md,
-    paddingHorizontal: SPACING["2xl"],
-  },
-  code: {
-    fontSize: 64,
-    lineHeight: 72,
-    color: withAlpha(COLORS.mutedForeground, 0.4),
-  },
-  body: {
-    maxWidth: 320,
-  },
-  action: {
-    marginTop: SPACING.sm,
-  },
-})
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: SPACING.md,
+      paddingHorizontal: SPACING["2xl"],
+    },
+    code: {
+      fontSize: 64,
+      lineHeight: 72,
+      color: withAlpha(c.mutedForeground, 0.4),
+    },
+    body: {
+      maxWidth: 320,
+    },
+    action: {
+      marginTop: SPACING.sm,
+    },
+  })

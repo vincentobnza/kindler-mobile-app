@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 
-import { COLORS, SPACING, TYPOGRAPHY } from "@/constants/theme";
+import { SPACING, TYPOGRAPHY } from "@/constants/theme";
 import { Text } from "@/components/ui/Text";
 
 import type { BookBlock } from "../types";
@@ -95,8 +95,8 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   break: {
+    // Colour comes from the themed `color="mutedForeground"` prop on <Text>.
     marginVertical: SPACING.lg,
     letterSpacing: 6,
-    color: COLORS.mutedForeground,
   },
 });

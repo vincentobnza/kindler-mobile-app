@@ -2,7 +2,8 @@ import type { ReactNode } from "react"
 import { StyleSheet, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { COLORS, LAYOUT } from "@/constants/theme"
+import { LAYOUT, type ThemeColors } from "@/constants/theme"
+import { useThemedStyles } from "@/theme"
 import { TopBar } from "@/layout/components/TopBar"
 
 import { SlideUpOnFocus } from "./SlideUpOnFocus"
@@ -27,6 +28,7 @@ export function Screen({
   animateOnFocus = false,
 }: ScreenProps) {
   const insets = useSafeAreaInsets()
+  const styles = useThemedStyles(makeStyles)
 
   const body = (
     <>
@@ -46,18 +48,19 @@ export function Screen({
   )
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    width: "100%",
-    maxWidth: LAYOUT.maxContentWidth,
-    alignSelf: "center",
-  },
-})
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: c.background,
+    },
+    flex: {
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+      width: "100%",
+      maxWidth: LAYOUT.maxContentWidth,
+      alignSelf: "center",
+    },
+  })

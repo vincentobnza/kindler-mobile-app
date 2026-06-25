@@ -5,7 +5,8 @@ import { router } from "expo-router"
 import { FlatList, Pressable, StyleSheet, View } from "react-native"
 
 import { buildPath } from "@/constants/routes"
-import { COLORS, LAYOUT, SPACING } from "@/constants/theme"
+import { LAYOUT, SPACING } from "@/constants/theme"
+import { useTheme } from "@/theme"
 import { UI_LABELS } from "@/constants/ui-labels"
 import { formatAuthors } from "@/lib/format/book"
 import { SectionHeader } from "@/components/common/SectionHeader"
@@ -21,6 +22,7 @@ const PLACEHOLDERS = [0, 1, 2, 3, 4]
 
 /** A horizontally-scrolling shelf of books for a single subject. */
 export function BookShelf({ shelf }: { shelf: Shelf }) {
+  const { colors } = useTheme()
   const { data, isPending, isError } = useQuery(subjectQueryOptions(shelf.subject))
 
   // A broken/empty shelf shouldn't leave a hole in the page.
@@ -42,7 +44,7 @@ export function BookShelf({ shelf }: { shelf: Shelf }) {
               <Text variant="label" color="primary">
                 {UI_LABELS.actions.viewAll}
               </Text>
-              <Ionicons name="arrow-forward" size={15} color={COLORS.primary} />
+              <Ionicons name="arrow-forward" size={15} color={colors.primary} />
             </Pressable>
           }
         />

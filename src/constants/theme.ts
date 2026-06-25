@@ -3,14 +3,21 @@
  *
  * Mirrors the web app's semantic CSS variables: an editorial "paper & ink"
  * aesthetic — warm paper background (#F7F4ED), near-black ink, and crisp solid
- * black hairline borders. Light-mode only; there is no dark theme.
+ * hairline borders. Two palettes share the exact same token shape: a warm light
+ * "paper" theme and a warm dark "ink reversed" theme.
  *
- * Never hardcode a colour, radius, spacing value or font family in a component —
- * import from here so the palette lives in one place.
+ * Components never read a palette directly — they resolve the active one via
+ * `useTheme()` / `useThemedStyles()` (see `src/theme`), which swaps the whole
+ * `ThemeColors` object when the scheme flips. Never hardcode a colour, radius,
+ * spacing value or font family in a component — import tokens from here so the
+ * palette lives in one place.
  */
 
-/** Semantic colour palette (matches `src/index.css` :root tokens on web). */
-export const COLORS = {
+/**
+ * Warm light "paper" palette (matches `src/index.css` :root tokens on web).
+ * This is the canonical token shape every other palette must satisfy.
+ */
+export const LIGHT_COLORS = {
   /** Warm paper background (exact brand value). */
   background: "#F7F4ED",
   foreground: "#1A1714",
@@ -40,12 +47,73 @@ export const COLORS = {
   success: "#2F8F4E",
   successForeground: "#FFFDF7",
 
-  /** Solid black hairlines — the defining trait of the design. */
+  /** Solid near-black hairlines — the defining trait of the design. */
   border: "#1A1714",
   ring: "#1A1714",
+
+  /** High-emphasis wordmark ink (pure black in light). */
+  brand: "#000000",
 } as const
 
-export type ColorToken = keyof typeof COLORS
+/**
+ * The canonical token shape every palette must satisfy. Values are widened to
+ * `string` (the `as const` literals on {@link LIGHT_COLORS} would otherwise pin
+ * each token to one exact hex, rejecting any other palette).
+ */
+export type ThemeColors = { [K in keyof typeof LIGHT_COLORS]: string }
+
+/**
+ * Warm dark "ink reversed" palette — the editorial identity at night. Keeps the
+ * paper warmth (slightly brown-tinted neutrals, not flat greys): a near-black
+ * warm ground, warm paper-white ink, and visible warm hairlines. Primary
+ * inverts to a solid light "ink" button with dark text, mirroring light mode.
+ */
+export const DARK_COLORS: ThemeColors = {
+  /** Warm near-black ground (a touch of brown keeps the paper feel). */
+  background: "#15120E",
+  foreground: "#ECE5D7",
+
+  /** Cards/inputs sit one step above the ground, separated by hairlines. */
+  card: "#1E1A14",
+  cardForeground: "#ECE5D7",
+
+  /** Primary inverts: a solid warm-paper button with dark ink text. */
+  primary: "#ECE5D7",
+  primaryForeground: "#15120E",
+
+  secondary: "#2A241C",
+  secondaryForeground: "#ECE5D7",
+
+  muted: "#2A241C",
+  mutedForeground: "#A79C89",
+
+  accent: "#342D22",
+  accentForeground: "#ECE5D7",
+
+  /** Lightened so it stays legible on the dark ground. */
+  destructive: "#E0726A",
+  destructiveForeground: "#15120E",
+
+  /** Lightened green for dark backgrounds. */
+  success: "#5FB87C",
+  successForeground: "#15120E",
+
+  /** Warm hairlines — kept clearly visible to preserve the crisp-rule look. */
+  border: "#4F4636",
+  ring: "#6E6249",
+
+  /** Wordmark reads as bright paper at night. */
+  brand: "#F2ECE0",
+}
+
+/**
+ * Light palette kept as the default static export. Use it ONLY where the colour
+ * must NOT react to the theme — module-scope constants and the deliberately
+ * always-black onboarding. Everywhere else, resolve colours via `useTheme()`.
+ */
+export const COLORS = LIGHT_COLORS
+
+export type ColorToken = keyof ThemeColors
 
 /** Returns a token colour with an applied alpha (e.g. `bg-primary/10`). */
 export function withAlpha(hex: string, alpha: number): string {

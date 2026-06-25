@@ -13,12 +13,13 @@ import { FullWindowOverlay } from "react-native-screens"
 
 import {
   BORDER_WIDTH,
-  COLORS,
   LAYOUT,
   RADIUS,
   SHADOW,
   SPACING,
+  type ThemeColors,
 } from "@/constants/theme"
+import { useTheme, useThemedStyles } from "@/theme"
 import { Text } from "@/components/ui/Text"
 
 import { useToastStore } from "./toast-store"
@@ -33,6 +34,8 @@ const VISIBLE_MS = 2200
  */
 export function ToastHost() {
   const insets = useSafeAreaInsets()
+  const { colors } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const id = useToastStore((state) => state.id)
   const message = useToastStore((state) => state.message)
   const icon = useToastStore((state) => state.icon)
@@ -80,7 +83,7 @@ export function ToastHost() {
       pointerEvents="none"
     >
       <Animated.View style={[styles.toast, animatedStyle]}>
-        {icon ? <Ionicons name={icon} size={18} color={COLORS.foreground} /> : null}
+        {icon ? <Ionicons name={icon} size={18} color={colors.foreground} /> : null}
         <Text variant="label" numberOfLines={1} style={styles.message}>
           {message}
         </Text>
@@ -95,27 +98,28 @@ export function ToastHost() {
   )
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "flex-end",
-    paddingHorizontal: LAYOUT.screenPaddingX,
-  },
-  toast: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: SPACING.sm,
-    maxWidth: 440,
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.md,
-    borderRadius: RADIUS.full,
-    borderWidth: BORDER_WIDTH,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-    ...SHADOW.floating,
-  },
-  message: {
-    flexShrink: 1,
-  },
-})
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: "center",
+      justifyContent: "flex-end",
+      paddingHorizontal: LAYOUT.screenPaddingX,
+    },
+    toast: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: SPACING.sm,
+      maxWidth: 440,
+      paddingHorizontal: SPACING.xl,
+      paddingVertical: SPACING.md,
+      borderRadius: RADIUS.full,
+      borderWidth: BORDER_WIDTH,
+      borderColor: c.border,
+      backgroundColor: c.card,
+      ...SHADOW.floating,
+    },
+    message: {
+      flexShrink: 1,
+    },
+  })

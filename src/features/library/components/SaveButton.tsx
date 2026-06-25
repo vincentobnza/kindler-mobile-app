@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet } from "react-native";
 
-import { BORDER_WIDTH, COLORS, RADIUS } from "@/constants/theme";
+import { BORDER_WIDTH, RADIUS, type ThemeColors } from "@/constants/theme";
+import { useTheme, useThemedStyles } from "@/theme";
 import { UI_LABELS } from "@/constants/ui-labels";
 import { showToast } from "@/components/feedback/toast/toast-store";
 import { Button } from "@/components/ui/Button";
@@ -18,6 +19,8 @@ interface SaveButtonProps {
 
 /** Toggles a book's saved status. Reads its own state from the store. */
 export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const isSaved = useLibraryStore((state) => Boolean(state.items[book.id]));
   const toggle = useLibraryStore((state) => state.toggle);
 
@@ -45,7 +48,7 @@ export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
             size={16}
-            color={isSaved ? COLORS.secondaryForeground : COLORS.foreground}
+            color={isSaved ? colors.secondaryForeground : colors.foreground}
           />
         }
       />
@@ -64,24 +67,25 @@ export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
       <Ionicons
         name={isSaved ? "bookmark" : "bookmark-outline"}
         size={16}
-        color={COLORS.foreground}
+        color={colors.foreground}
       />
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  iconButton: {
-    width: 32,
-    height: 32,
-    borderRadius: RADIUS.full,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: BORDER_WIDTH,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
-  },
-  pressed: {
-    backgroundColor: COLORS.accent,
-  },
-});
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    iconButton: {
+      width: 32,
+      height: 32,
+      borderRadius: RADIUS.full,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: BORDER_WIDTH,
+      borderColor: c.border,
+      backgroundColor: c.card,
+    },
+    pressed: {
+      backgroundColor: c.accent,
+    },
+  });

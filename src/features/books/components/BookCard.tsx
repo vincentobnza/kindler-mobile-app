@@ -5,7 +5,13 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 import { FEATURE_FLAGS } from "@/constants/feature-flags";
 import { buildPath } from "@/constants/routes";
-import { COLORS, RADIUS, SPACING, withAlpha } from "@/constants/theme";
+import {
+  RADIUS,
+  SPACING,
+  withAlpha,
+  type ThemeColors,
+} from "@/constants/theme";
+import { useTheme, useThemedStyles } from "@/theme";
 import { formatAuthors, formatRating } from "@/lib/format/book";
 import { Text } from "@/components/ui/Text";
 import { SaveButton } from "@/features/library/components/SaveButton";
@@ -29,6 +35,8 @@ export interface BookCardItem {
 
 /** Tappable, saveable cover card for a single book (grid item). */
 export function BookCard({ book }: { book: BookCardItem }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const rating = FEATURE_FLAGS.bookRatings
     ? formatRating(book.ratingsAverage)
     : null;
@@ -55,7 +63,7 @@ export function BookCard({ book }: { book: BookCardItem }) {
         </View>
         {rating ? (
           <View style={styles.ratingBadge}>
-            <Ionicons name="star" size={11} color={COLORS.primary} />
+            <Ionicons name="star" size={11} color={colors.primary} />
             <Text variant="caption">{rating}</Text>
           </View>
         ) : null}
@@ -78,35 +86,36 @@ export function BookCard({ book }: { book: BookCardItem }) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flex: 1,
-    gap: SPACING.md,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  saveSlot: {
-    position: "absolute",
-    top: SPACING.sm,
-    right: SPACING.sm,
-  },
-  ratingBadge: {
-    position: "absolute",
-    top: SPACING.sm,
-    left: SPACING.sm,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
-    borderRadius: RADIUS.none,
-    backgroundColor: withAlpha(COLORS.card, 0.9),
-  },
-  meta: {
-    gap: 2,
-  },
-  year: {
-    color: withAlpha(COLORS.mutedForeground, 0.8),
-  },
-});
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    card: {
+      flex: 1,
+      gap: SPACING.md,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    saveSlot: {
+      position: "absolute",
+      top: SPACING.sm,
+      right: SPACING.sm,
+    },
+    ratingBadge: {
+      position: "absolute",
+      top: SPACING.sm,
+      left: SPACING.sm,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 3,
+      paddingHorizontal: SPACING.sm,
+      paddingVertical: 2,
+      borderRadius: RADIUS.none,
+      backgroundColor: withAlpha(c.card, 0.9),
+    },
+    meta: {
+      gap: 2,
+    },
+    year: {
+      color: withAlpha(c.mutedForeground, 0.8),
+    },
+  });

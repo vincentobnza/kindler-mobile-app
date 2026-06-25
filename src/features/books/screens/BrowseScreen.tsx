@@ -7,7 +7,8 @@ import {
   SEARCH_PAGE_SIZE,
   SKELETON_GRID_COUNT,
 } from "@/constants/app-config"
-import { COLORS, LAYOUT, SPACING } from "@/constants/theme"
+import { LAYOUT, SPACING, type ThemeColors } from "@/constants/theme"
+import { useTheme, useThemedStyles } from "@/theme"
 import { UI_LABELS } from "@/constants/ui-labels"
 import { EmptyState } from "@/components/feedback/EmptyState"
 import { ErrorState } from "@/components/feedback/ErrorState"
@@ -22,6 +23,8 @@ import { useBookSearch } from "../hooks/useBookSearch"
 
 /** Browse — a search modal over the Open Library (param/query driven). */
 export function BrowseScreen() {
+  const { colors } = useTheme()
+  const styles = useThemedStyles(makeStyles)
   const { input, setInput, term, page, setPage, query } = useBookSearch()
 
   const hasQuery = term.trim().length >= SEARCH_MIN_QUERY_LENGTH
@@ -82,7 +85,7 @@ export function BrowseScreen() {
                   disabled={!hasPrev}
                   onPress={() => setPage((current) => Math.max(1, current - 1))}
                   leftIcon={
-                    <Ionicons name="chevron-back" size={16} color={COLORS.foreground} />
+                    <Ionicons name="chevron-back" size={16} color={colors.foreground} />
                   }
                 />
                 <Text variant="small" color="mutedForeground">
@@ -95,7 +98,7 @@ export function BrowseScreen() {
                   disabled={!hasNext}
                   onPress={() => setPage((current) => current + 1)}
                   rightIcon={
-                    <Ionicons name="chevron-forward" size={16} color={COLORS.foreground} />
+                    <Ionicons name="chevron-forward" size={16} color={colors.foreground} />
                   }
                 />
               </View>
@@ -107,10 +110,11 @@ export function BrowseScreen() {
   )
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: c.background,
   },
   header: {
     paddingHorizontal: LAYOUT.screenPaddingX,
@@ -140,4 +144,4 @@ const styles = StyleSheet.create({
     width: "47%",
     flexGrow: 1,
   },
-})
+  })

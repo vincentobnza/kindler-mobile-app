@@ -21,8 +21,9 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { Pressable } from "react-native";
 
-import { COLORS, FONTS } from "@/constants/theme";
+import { FONTS } from "@/constants/theme";
 import { UI_LABELS } from "@/constants/ui-labels";
+import { ThemeProvider, useTheme } from "@/theme";
 import { AppProviders } from "@/providers/AppProviders";
 import { AnimatedSplash } from "@/components/splash/AnimatedSplash";
 import { ToastHost } from "@/components/feedback/toast/ToastHost";
@@ -35,6 +36,7 @@ void SplashScreen.preventAutoHideAsync();
 
 /** Close (✕) affordance for modal screens (book detail, browse). */
 function ModalCloseButton() {
+  const { colors } = useTheme();
   return (
     <Pressable
       accessibilityRole="button"
@@ -42,7 +44,7 @@ function ModalCloseButton() {
       onPress={() => router.back()}
       hitSlop={10}
     >
-      <Ionicons name="close" size={24} color={COLORS.foreground} />
+      <Ionicons name="close" size={24} color={colors.foreground} />
     </Pressable>
   );
 }
@@ -54,6 +56,20 @@ const HYDRATION_FALLBACK_MS = 2500;
 const SPLASH_MIN_MS = 3000;
 
 export default function RootLayout() {
+  return (
+    <AppProviders>
+      <RootLayoutNav />
+    </AppProviders>
+  );
+}
+
+/**
+ * The app chrome, rendered *inside* the providers so it can resolve the active
+ * theme. Owns font loading, store hydration and the splash/onboarding gate.
+ */
+function RootLayoutNav() {
+  const { colors, isDark } = useTheme();
+
   const [fontsLoaded] = useFonts({
     Lexend_400Regular,
     Lexend_500Medium,
@@ -103,15 +119,18 @@ export default function RootLayout() {
   const showOnboarding = splashDone && !onboardingDone;
 
   return (
-    <AppProviders>
-      <StatusBar style="dark" />
+    <>
+      <StatusBar style={isDark ? "light" : "dark"} />
       <Stack
         screenOptions={{
-          contentStyle: { backgroundColor: COLORS.background },
-          headerStyle: { backgroundColor: COLORS.background },
-          headerTintColor: COLORS.foreground,
+          contentStyle: { backgroundColor: colors.background },
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.foreground,
           headerShadowVisible: false,
-          headerTitleStyle: { fontFamily: FONTS.serifSemiBold },
+          headerTitleStyle: {
+            fontFamily: FONTS.serifSemiBold,
+            color: colors.foreground,
+          },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -145,12 +164,16 @@ export default function RootLayout() {
       <ToastHost />
 
       {showOnboarding ? (
-        <OnboardingScreen onContinue={() => setOnboardingDone(true)} />
+        // Onboarding is a deliberate always-black scene — pin it to the light
+        // palette so its "paper" text/CTA stay correct regardless of theme.
+        <ThemeProvider forceScheme="light">
+          <OnboardingScreen onContinue={() => setOnboardingDone(true)} />
+        </ThemeProvider>
       ) : null}
 
       {!splashDone ? (
         <AnimatedSplash ready={appReady} onFinish={() => setSplashDone(true)} />
       ) : null}
-    </AppProviders>
+    </>
   );
 }

@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons"
 import { Pressable } from "react-native"
 
-import { COLORS, withAlpha } from "@/constants/theme"
+import { withAlpha } from "@/constants/theme"
+import { useTheme } from "@/theme"
 import { UI_LABELS } from "@/constants/ui-labels"
 import { Input } from "@/components/ui/Input"
 
@@ -13,6 +14,7 @@ interface BookSearchProps {
 
 /** Controlled search box for finding books (debounced upstream). */
 export function BookSearch({ value, onChange, autoFocus }: BookSearchProps) {
+  const { colors } = useTheme()
   return (
     <Input
       pill
@@ -28,7 +30,7 @@ export function BookSearch({ value, onChange, autoFocus }: BookSearchProps) {
         <Ionicons
           name="search"
           size={18}
-          color={withAlpha(COLORS.mutedForeground, 0.7)}
+          color={withAlpha(colors.mutedForeground, 0.7)}
         />
       }
       rightSlot={
@@ -39,7 +41,7 @@ export function BookSearch({ value, onChange, autoFocus }: BookSearchProps) {
             onPress={() => onChange("")}
             hitSlop={8}
           >
-            <Ionicons name="close" size={18} color={COLORS.mutedForeground} />
+            <Ionicons name="close" size={18} color={colors.mutedForeground} />
           </Pressable>
         ) : null
       }

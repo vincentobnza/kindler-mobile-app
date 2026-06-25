@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useMemo, type ReactNode } from "react"
 import {
   Pressable,
   StyleSheet,
@@ -10,13 +10,14 @@ import {
 
 import {
   BORDER_WIDTH,
-  COLORS,
   RADIUS,
   SPACING,
   TYPOGRAPHY,
   withAlpha,
   type ColorToken,
+  type ThemeColors,
 } from "@/constants/theme"
+import { useTheme } from "@/theme"
 
 import { Text } from "./Text"
 
@@ -48,42 +49,45 @@ interface VariantStyle {
   underline?: boolean
 }
 
-const VARIANTS: Record<ButtonVariant, VariantStyle> = {
-  default: {
-    container: { backgroundColor: COLORS.primary },
-    pressed: { backgroundColor: withAlpha(COLORS.primary, 0.9) },
-    color: "primaryForeground",
-  },
-  secondary: {
-    container: { backgroundColor: COLORS.secondary },
-    pressed: { backgroundColor: withAlpha(COLORS.secondaryForeground, 0.12) },
-    color: "secondaryForeground",
-  },
-  outline: {
-    container: {
-      backgroundColor: COLORS.background,
-      borderWidth: BORDER_WIDTH,
-      borderColor: COLORS.border,
+/** Builds the variant map from the active palette so colours track the theme. */
+function buildVariants(c: ThemeColors): Record<ButtonVariant, VariantStyle> {
+  return {
+    default: {
+      container: { backgroundColor: c.primary },
+      pressed: { backgroundColor: withAlpha(c.primary, 0.9) },
+      color: "primaryForeground",
     },
-    pressed: { backgroundColor: COLORS.muted },
-    color: "foreground",
-  },
-  ghost: {
-    container: { backgroundColor: "transparent" },
-    pressed: { backgroundColor: COLORS.muted },
-    color: "foreground",
-  },
-  destructive: {
-    container: { backgroundColor: withAlpha(COLORS.destructive, 0.1) },
-    pressed: { backgroundColor: withAlpha(COLORS.destructive, 0.2) },
-    color: "destructive",
-  },
-  link: {
-    container: { backgroundColor: "transparent" },
-    pressed: { opacity: 0.7 },
-    color: "primary",
-    underline: true,
-  },
+    secondary: {
+      container: { backgroundColor: c.secondary },
+      pressed: { backgroundColor: withAlpha(c.secondaryForeground, 0.12) },
+      color: "secondaryForeground",
+    },
+    outline: {
+      container: {
+        backgroundColor: c.background,
+        borderWidth: BORDER_WIDTH,
+        borderColor: c.border,
+      },
+      pressed: { backgroundColor: c.muted },
+      color: "foreground",
+    },
+    ghost: {
+      container: { backgroundColor: "transparent" },
+      pressed: { backgroundColor: c.muted },
+      color: "foreground",
+    },
+    destructive: {
+      container: { backgroundColor: withAlpha(c.destructive, 0.1) },
+      pressed: { backgroundColor: withAlpha(c.destructive, 0.2) },
+      color: "destructive",
+    },
+    link: {
+      container: { backgroundColor: "transparent" },
+      pressed: { opacity: 0.7 },
+      color: "primary",
+      underline: true,
+    },
+  }
 }
 
 const SIZES: Record<ButtonSize, ViewStyle> = {
@@ -110,7 +114,9 @@ export function Button({
   style,
   ...props
 }: ButtonProps) {
-  const v = VARIANTS[variant]
+  const { colors } = useTheme()
+  const variants = useMemo(() => buildVariants(colors), [colors])
+  const v = variants[variant]
   const isLink = variant === "link"
 
   return (

@@ -10,7 +10,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { SITE } from "@/constants/site";
-import { BRAND_INK, COLORS, FONTS, SPACING } from "@/constants/theme";
+import { FONTS, SPACING, type ThemeColors } from "@/constants/theme";
+import { useThemedStyles } from "@/theme";
 
 interface AnimatedSplashProps {
   /** Called once the exit animation has fully played out. */
@@ -30,6 +31,7 @@ const HOLD_MS = 0;
  * fades up and away to hand off to the app. Honours "reduce motion".
  */
 export function AnimatedSplash({ onFinish, ready }: AnimatedSplashProps) {
+  const styles = useThemedStyles(makeStyles);
   const logoOpacity = useSharedValue(0);
   const logoScale = useSharedValue(0.92);
   const logoY = useSharedValue(10);
@@ -122,31 +124,32 @@ export function AnimatedSplash({ onFinish, ready }: AnimatedSplashProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  fill: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: COLORS.background,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  center: {
-    alignItems: "center",
-    gap: SPACING.lg,
-  },
-  wordmark: {
-    fontFamily: FONTS.serifExtraBoldItalic,
-    fontSize: 52,
-    lineHeight: 60,
-    letterSpacing: -1,
-    color: BRAND_INK,
-  },
-  rule: {
-    width: RULE_WIDTH,
-    height: 2,
-    backgroundColor: COLORS.foreground,
-  },
-  loader: {
-    position: "absolute",
-    bottom: SPACING["5xl"],
-  },
-});
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    fill: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: c.background,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    center: {
+      alignItems: "center",
+      gap: SPACING.lg,
+    },
+    wordmark: {
+      fontFamily: FONTS.serifExtraBoldItalic,
+      fontSize: 52,
+      lineHeight: 60,
+      letterSpacing: -1,
+      color: c.brand,
+    },
+    rule: {
+      width: RULE_WIDTH,
+      height: 2,
+      backgroundColor: c.foreground,
+    },
+    loader: {
+      position: "absolute",
+      bottom: SPACING["5xl"],
+    },
+  });

@@ -6,11 +6,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buildPath } from "@/constants/routes";
 import {
   BORDER_WIDTH,
-  COLORS,
   LAYOUT,
   RADIUS,
   SPACING,
+  type ThemeColors,
 } from "@/constants/theme";
+import { useTheme, useThemedStyles } from "@/theme";
 import { UI_LABELS } from "@/constants/ui-labels";
 import { formatAuthors } from "@/lib/format/book";
 import { ErrorState } from "@/components/feedback/ErrorState";
@@ -28,6 +29,8 @@ const MAX_SUBJECTS = 12;
 /** Single-book detail: cover, description, subjects, save + read actions. */
 export function BookDetailScreen({ bookId }: { bookId: string }) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { data: book, isPending, isError, error, refetch } = useBook(bookId);
   const startedPage = useReadingProgressStore((state) => state.pages[bookId]);
 
@@ -82,7 +85,7 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
           <Ionicons
             name="calendar-outline"
             size={15}
-            color={COLORS.mutedForeground}
+            color={colors.mutedForeground}
           />
           <Text variant="small" color="mutedForeground">
             First published {book.firstPublishDate}
@@ -102,7 +105,7 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
             <Ionicons
               name="book-outline"
               size={16}
-              color={COLORS.primaryForeground}
+              color={colors.primaryForeground}
             />
           }
         />
@@ -130,7 +133,7 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
             <Ionicons
               name="pricetag-outline"
               size={16}
-              color={COLORS.mutedForeground}
+              color={colors.mutedForeground}
             />
             <Text variant="h3">Subjects</Text>
           </View>
@@ -149,16 +152,17 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: c.background,
   },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.background,
+    backgroundColor: c.background,
   },
   content: {
     width: "100%",
@@ -205,7 +209,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs + 2,
     borderRadius: RADIUS.full,
     borderWidth: BORDER_WIDTH,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
+    borderColor: c.border,
+    backgroundColor: c.card,
   },
-});
+  });

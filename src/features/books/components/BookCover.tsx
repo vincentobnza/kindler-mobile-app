@@ -9,7 +9,13 @@ import {
 import { Image } from "expo-image"
 
 import type { CoverSize } from "@/constants/api-endpoints"
-import { COLORS, RADIUS, SPACING, withAlpha } from "@/constants/theme"
+import {
+  RADIUS,
+  SPACING,
+  withAlpha,
+  type ThemeColors,
+} from "@/constants/theme"
+import { useThemedStyles } from "@/theme"
 import { bookCoverUrl } from "@/lib/format/book"
 import { Text } from "@/components/ui/Text"
 
@@ -40,6 +46,7 @@ export function BookCover({
   recyclingKey,
   style,
 }: BookCoverProps) {
+  const styles = useThemedStyles(makeStyles)
   const src = bookCoverUrl({ coverId, coverEdition }, size)
   const [failed, setFailed] = useState(false)
 
@@ -74,19 +81,20 @@ export function BookCover({
   )
 }
 
-const styles = StyleSheet.create({
-  cover: {
-    width: "100%",
-    aspectRatio: 2 / 3,
-    borderRadius: RADIUS.none,
-    backgroundColor: COLORS.muted,
-  },
-  placeholder: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: SPACING.lg,
-  },
-  placeholderText: {
-    color: withAlpha(COLORS.mutedForeground, 0.4),
-  },
-})
+const makeStyles = (c: ThemeColors) =>
+  StyleSheet.create({
+    cover: {
+      width: "100%",
+      aspectRatio: 2 / 3,
+      borderRadius: RADIUS.none,
+      backgroundColor: c.muted,
+    },
+    placeholder: {
+      alignItems: "center",
+      justifyContent: "center",
+      padding: SPACING.lg,
+    },
+    placeholderText: {
+      color: withAlpha(c.mutedForeground, 0.4),
+    },
+  })

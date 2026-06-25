@@ -1,12 +1,12 @@
 import { Text as RNText, type TextProps as RNTextProps } from "react-native"
 
 import {
-  COLORS,
   FONTS,
   TYPOGRAPHY,
   type ColorToken,
   type TypographyVariant,
 } from "@/constants/theme"
+import { useTheme } from "@/theme"
 
 export interface TextProps extends RNTextProps {
   /** Typography preset (size, leading, family, tracking). Defaults to `body`. */
@@ -31,6 +31,7 @@ export function Text({
   style,
   ...props
 }: TextProps) {
+  const { colors } = useTheme()
   const preset = TYPOGRAPHY[variant]
   const isSerif = preset.fontFamily.startsWith("EBGaramond")
 
@@ -40,7 +41,7 @@ export function Text({
         preset,
         italic && isSerif ? { fontFamily: FONTS.serifItalic } : null,
         italic && !isSerif ? { fontStyle: "italic" } : null,
-        { color: COLORS[color] },
+        { color: colors[color] },
         align ? { textAlign: align } : null,
         style,
       ]}

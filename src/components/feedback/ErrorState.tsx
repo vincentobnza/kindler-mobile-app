@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons"
 import { StyleSheet, View } from "react-native"
 
 import { STATE_IMAGES } from "@/constants/assets"
-import { COLORS, SPACING } from "@/constants/theme"
+import { SPACING } from "@/constants/theme"
+import { useTheme } from "@/theme"
 import { UI_LABELS } from "@/constants/ui-labels"
 import { ApiError } from "@/lib/http/api-error"
 import { Button } from "@/components/ui/Button"
@@ -34,6 +35,7 @@ export function ErrorState({
   error,
   onRetry,
 }: ErrorStateProps) {
+  const { colors } = useTheme()
   const message =
     description ?? describeError(error, "An unexpected error occurred.")
 
@@ -58,7 +60,7 @@ export function ErrorState({
           label={UI_LABELS.actions.retry}
           onPress={onRetry}
           leftIcon={
-            <Ionicons name="refresh" size={16} color={COLORS.foreground} />
+            <Ionicons name="refresh" size={16} color={colors.foreground} />
           }
           style={styles.retry}
         />
