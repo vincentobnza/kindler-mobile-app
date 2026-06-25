@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import {
@@ -16,6 +17,7 @@ import {
   READER_FONT_SCALE,
 } from "@/constants/app-config";
 import {
+  BORDER_WIDTH,
   LAYOUT,
   RADIUS,
   SPACING,
@@ -29,14 +31,26 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { ErrorState } from "@/components/feedback/ErrorState";
 import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
+import { Sheet } from "@/components/ui/Sheet";
 import { Text } from "@/components/ui/Text";
 import { useBook } from "@/features/books/hooks/useBook";
 
 import { ReaderSection } from "../components/ReaderSection";
 import { useBookText } from "../hooks/useBookText";
 import { paginate } from "../lib/paginate";
+import {
+  DEFAULT_READING_FONT,
+  READING_FONTS,
+  readingFontFamily,
+} from "../reading-fonts";
+import { useReaderPreferencesStore } from "../stores/reader-preferences-store";
 import { useReadingProgressStore } from "../stores/reading-progress-store";
 import type { BookBlock } from "../types";
+
+/** Light tactile tap shared by the reader's header controls. */
+function tapFeedback() {
+  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+}
 
 export function ReaderScreen({ bookId }: { bookId: string }) {
   const insets = useSafeAreaInsets();
@@ -46,6 +60,13 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
   const text = useBookText(bookId);
 
   const [fontScale, setFontScale] = useState<number>(READER_FONT_SCALE.default);
+
+  // Reading font — a persisted, cross-book preference picked from a sheet.
+  const fontKey = useReaderPreferencesStore((state) => state.fontKey);
+  const setFontKey = useReaderPreferencesStore((state) => state.setFontKey);
+  const fontFamily = readingFontFamily(fontKey ?? DEFAULT_READING_FONT);
+  const [fontSheetOpen, setFontSheetOpen] = useState(false);
+
   // Captured once at mount so the saved position survives the first persist.
   const [initialSection] = useState(
     () => useReadingProgressStore.getState().pages[bookId] ?? 0,
@@ -92,53 +113,116 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
   ).current;
 
   const topBar = (
-    <View style={styles.topBar}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={UI_LABELS.actions.back}
-        onPress={() => router.back()}
-        hitSlop={10}
-        style={styles.backButton}
-      >
-        <Ionicons name="chevron-back" size={22} color={colors.foreground} />
-        <Text variant="label">{UI_LABELS.actions.back}</Text>
-      </Pressable>
+    <>
+      <View style={styles.topBar}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={UI_LABELS.actions.back}
+          onPress={() => {
+            tapFeedback();
+            router.back();
+          }}
+          hitSlop={10}
+          style={styles.backButton}
+        >
+          <Ionicons name="chevron-back" size={22} color={colors.foreground} />
+          <Text variant="label">{UI_LABELS.actions.back}</Text>
+        </Pressable>
 
-      <View style={styles.fontControls}>
-        <Button
-          variant="outline"
-          size="icon-sm"
-          onPress={() =>
-            setFontScale((s) =>
-              Math.max(
-                READER_FONT_SCALE.min,
-                Number((s - READER_FONT_SCALE.step).toFixed(2)),
-              ),
-            )
-          }
-          disabled={fontScale <= READER_FONT_SCALE.min}
-          accessibilityLabel={UI_LABELS.actions.decreaseFont}
-        >
-          <Text variant="caption">A</Text>
-        </Button>
-        <Button
-          variant="outline"
-          size="icon-sm"
-          onPress={() =>
-            setFontScale((s) =>
-              Math.min(
-                READER_FONT_SCALE.max,
-                Number((s + READER_FONT_SCALE.step).toFixed(2)),
-              ),
-            )
-          }
-          disabled={fontScale >= READER_FONT_SCALE.max}
-          accessibilityLabel={UI_LABELS.actions.increaseFont}
-        >
-          <Text variant="body">A</Text>
-        </Button>
+        <View style={styles.fontControls}>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onPress={() => {
+              tapFeedback();
+              setFontSheetOpen(true);
+            }}
+            accessibilityLabel="Change reading font"
+          >
+            <Ionicons name="text-outline" size={16} color={colors.foreground} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onPress={() => {
+              tapFeedback();
+              setFontScale((s) =>
+                Math.max(
+                  READER_FONT_SCALE.min,
+                  Number((s - READER_FONT_SCALE.step).toFixed(2)),
+                ),
+              );
+            }}
+            disabled={fontScale <= READER_FONT_SCALE.min}
+            accessibilityLabel={UI_LABELS.actions.decreaseFont}
+          >
+            <Text variant="caption">A</Text>
+          </Button>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onPress={() => {
+              tapFeedback();
+              setFontScale((s) =>
+                Math.min(
+                  READER_FONT_SCALE.max,
+                  Number((s + READER_FONT_SCALE.step).toFixed(2)),
+                ),
+              );
+            }}
+            disabled={fontScale >= READER_FONT_SCALE.max}
+            accessibilityLabel={UI_LABELS.actions.increaseFont}
+          >
+            <Text variant="body">A</Text>
+          </Button>
+        </View>
       </View>
-    </View>
+
+      <Sheet
+        visible={fontSheetOpen}
+        onClose={() => setFontSheetOpen(false)}
+        title="Reading font"
+      >
+        <View>
+          {READING_FONTS.map((option, index) => {
+            const selected = option.key === fontKey;
+            return (
+              <Pressable
+                key={option.key}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                accessibilityLabel={option.label}
+                onPress={() => {
+                  setFontKey(option.key);
+                  setFontSheetOpen(false);
+                }}
+                style={({ pressed }) => [
+                  styles.fontOption,
+                  index > 0 && styles.fontOptionDivider,
+                  pressed && styles.fontOptionPressed,
+                ]}
+              >
+                <View style={styles.fontOptionText}>
+                  <Text style={{ fontFamily: option.family, fontSize: 20 }}>
+                    {option.label}
+                  </Text>
+                  <Text variant="caption" color="mutedForeground">
+                    {option.description}
+                  </Text>
+                </View>
+                {selected ? (
+                  <Ionicons
+                    name="checkmark"
+                    size={20}
+                    color={colors.foreground}
+                  />
+                ) : null}
+              </Pressable>
+            );
+          })}
+        </View>
+      </Sheet>
+    </>
   );
 
   if (text.isError) {
@@ -209,7 +293,11 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
         data={sections}
         keyExtractor={(_, index) => String(index)}
         renderItem={({ item }) => (
-          <ReaderSection blocks={item} fontScale={fontScale} />
+          <ReaderSection
+            blocks={item}
+            fontScale={fontScale}
+            fontFamily={fontFamily}
+          />
         )}
         style={styles.list}
         contentContainerStyle={[
@@ -240,7 +328,7 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
             </Text>
           </Pressable>
         }
-        extraData={fontScale}
+        extraData={`${fontScale}|${fontKey}`}
         initialScrollIndex={
           initialSection > 0
             ? Math.min(initialSection, totalSections - 1)
@@ -320,5 +408,23 @@ const makeStyles = (c: ThemeColors) =>
   },
   footer: {
     paddingTop: SPACING.lg,
+  },
+  fontOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: SPACING.md,
+    paddingVertical: SPACING.md,
+  },
+  fontOptionDivider: {
+    borderTopWidth: BORDER_WIDTH,
+    borderColor: c.border,
+  },
+  fontOptionPressed: {
+    opacity: 0.55,
+  },
+  fontOptionText: {
+    flexShrink: 1,
+    gap: 2,
   },
   });

@@ -6,4 +6,6 @@ export const STORAGE_KEYS = {
   readingProgress: "kindler:reading-progress",
   /** Colour-scheme preference: "system" | "light" | "dark". */
   themePreference: "kindler:theme-preference",
+  /** Reader preferences (e.g. chosen reading font), shared across books. */
+  readerPreferences: "kindler:reader-preferences",
 } as const

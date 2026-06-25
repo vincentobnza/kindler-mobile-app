@@ -10,6 +10,8 @@ interface ReaderSectionProps {
   blocks: BookBlock[];
   /** Multiplier applied to the reading type scale (A-/A+ control). */
   fontScale: number;
+  /** Font family for the running prose, chosen from the reader's font sheet. */
+  fontFamily: string;
 }
 
 // Asterism (U+2042), by code point, used as the scene-break ornament.
@@ -22,8 +24,13 @@ const ASTERISM = String.fromCharCode(0x2042);
  * as a centered ornament, and prose flows as justified paragraphs, so the
  * scroll reads as one continuous book column with no visible seams.
  */
-export function ReaderSection({ blocks, fontScale }: ReaderSectionProps) {
+export function ReaderSection({
+  blocks,
+  fontScale,
+  fontFamily,
+}: ReaderSectionProps) {
   const prose = {
+    fontFamily,
     fontSize: TYPOGRAPHY.reading.fontSize * fontScale,
     lineHeight: TYPOGRAPHY.reading.lineHeight * fontScale,
   };
