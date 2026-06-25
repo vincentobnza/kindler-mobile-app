@@ -30,6 +30,7 @@ import { ReaderSection } from "../components/ReaderSection";
 import { useBookText } from "../hooks/useBookText";
 import { paginate } from "../lib/paginate";
 import { useReadingProgressStore } from "../stores/reading-progress-store";
+import type { BookBlock } from "../types";
 
 export function ReaderScreen({ bookId }: { bookId: string }) {
   const insets = useSafeAreaInsets();
@@ -43,11 +44,11 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
   );
   const [topSection, setTopSection] = useState(initialSection);
 
-  const listRef = useRef<FlatList<string[]>>(null);
+  const listRef = useRef<FlatList<BookBlock[]>>(null);
 
   // The whole book is chunked into virtualized sections; pure + memoized.
   const sections = text.data
-    ? paginate(text.data.paragraphs, READER_CHARS_PER_SECTION)
+    ? paginate(text.data.blocks, READER_CHARS_PER_SECTION)
     : [];
   const totalSections = sections.length;
 
@@ -200,7 +201,7 @@ export function ReaderScreen({ bookId }: { bookId: string }) {
         data={sections}
         keyExtractor={(_, index) => String(index)}
         renderItem={({ item }) => (
-          <ReaderSection paragraphs={item} fontScale={fontScale} />
+          <ReaderSection blocks={item} fontScale={fontScale} />
         )}
         style={styles.list}
         contentContainerStyle={[

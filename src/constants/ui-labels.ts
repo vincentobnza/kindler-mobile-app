@@ -55,4 +55,4 @@ export const UI_LABELS = {
       "Discover, search and save books from the Open Library — a calm, paper-inspired place to find your next read.",
     continue: "Continue",
   },
-} as const
+} as const;

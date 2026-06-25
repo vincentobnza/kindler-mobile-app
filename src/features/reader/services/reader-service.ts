@@ -168,12 +168,15 @@ async function readFromItem(
   if (!file) return null;
 
   const raw = await fetchText(ARCHIVE.file(ocaid, file.name), signal);
-  const paragraphs = cleanBookText(raw);
+  const blocks = cleanBookText(raw);
 
-  const length = paragraphs.reduce((total, p) => total + p.length, 0);
+  const length = blocks.reduce((total, block) => {
+    if (block.kind === "break") return total;
+    return total + (block.kind === "heading" ? block.title : block.text).length;
+  }, 0);
   if (length < READER_MIN_TEXT_CHARS) return null;
 
-  return { paragraphs, source: describeSource(ocaid) };
+  return { blocks, source: describeSource(ocaid) };
 }
 
 export const readerService = {
@@ -198,6 +201,9 @@ export const readerService = {
       }
     }
 
-    throw new ApiError("No readable full text is available for this book.", 404);
+    throw new ApiError(
+      "No readable full text is available for this book.",
+      404,
+    );
   },
 };
