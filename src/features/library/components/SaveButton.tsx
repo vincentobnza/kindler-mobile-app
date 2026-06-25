@@ -37,7 +37,7 @@ export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
   if (withLabel) {
     return (
       <Button
-        variant={isSaved ? "secondary" : "default"}
+        variant={isSaved ? "secondary" : "outline"}
         label={label}
         accessibilityState={{ selected: isSaved }}
         onPress={handleToggle}
@@ -45,9 +45,7 @@ export function SaveButton({ book, withLabel = false }: SaveButtonProps) {
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
             size={16}
-            color={
-              isSaved ? COLORS.secondaryForeground : COLORS.primaryForeground
-            }
+            color={isSaved ? COLORS.secondaryForeground : COLORS.foreground}
           />
         }
       />

@@ -13,6 +13,7 @@ import {
   Lexend_600SemiBold,
   Lexend_700Bold,
 } from "@expo-google-fonts/lexend";
+import { Literata_400Regular } from "@expo-google-fonts/literata";
 import { Ionicons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
@@ -64,6 +65,7 @@ export default function RootLayout() {
     EBGaramond_700Bold,
     EBGaramond_400Regular_Italic,
     EBGaramond_800ExtraBold_Italic,
+    Literata_400Regular,
   });
 
   const hydrated = useLibraryStore((state) => state.hasHydrated);
@@ -127,6 +129,14 @@ export default function RootLayout() {
             presentation: "modal",
             title: "",
             headerLeft: () => <ModalCloseButton />,
+          }}
+        />
+        <Stack.Screen
+          name="read/[id]"
+          options={{
+            // Immersive reader: it renders its own top bar (back + text size).
+            headerShown: false,
+            presentation: "fullScreenModal",
           }}
         />
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />

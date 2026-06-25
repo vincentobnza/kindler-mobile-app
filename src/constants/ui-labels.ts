@@ -13,11 +13,18 @@ export const UI_LABELS = {
     saveToLibrary: "Save to library",
     removeFromLibrary: "Remove from library",
     readOnline: "Read online",
+    read: "Read",
+    startReading: "Start reading",
+    continueReading: "Continue reading",
     search: "Search",
     clearSearch: "Clear search",
     clearAll: "Clear all",
     browseBooks: "Browse books",
     backToHome: "Back to home",
+    prevPage: "Previous page",
+    nextPage: "Next page",
+    decreaseFont: "Decrease text size",
+    increaseFont: "Increase text size",
   },
   states: {
     loading: "Loading…",
@@ -33,6 +40,9 @@ export const UI_LABELS = {
     searchPrompt: "Search by title, author or subject to begin.",
     noCover: "No cover available",
     noDescription: "No description available for this book yet.",
+    preparingText: "Fetching the full text…",
+    noFullText:
+      "This title isn't available to read in full here. You can still read it on Open Library.",
   },
   toasts: {
     saved: "Saved to your library",

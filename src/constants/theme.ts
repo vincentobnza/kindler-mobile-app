@@ -134,6 +134,8 @@ export const FONTS = {
   serifItalic: "EBGaramond_400Regular_Italic",
   /** Heaviest face — used for the wordmark / brand. */
   serifExtraBoldItalic: "EBGaramond_800ExtraBold_Italic",
+  /** Long-form reading face — Literata, designed by Google for on-screen books. */
+  reading: "Literata_400Regular",
 } as const
 
 /** Pure black, reserved for the high-emphasis brand wordmark. */
@@ -187,9 +189,9 @@ export const TYPOGRAPHY = {
     lineHeight: 27,
     letterSpacing: -0.54,
   },
-  /** Long-form reading copy (serif, relaxed measure, normal tracking). */
+  /** Long-form reading copy (Literata, relaxed measure, normal tracking). */
   reading: {
-    fontFamily: FONTS.serif,
+    fontFamily: FONTS.reading,
     fontSize: 18,
     lineHeight: 31,
     letterSpacing: 0,

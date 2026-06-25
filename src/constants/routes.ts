@@ -14,6 +14,8 @@ export const ROUTE_PATHS = {
   library: "/library",
   /** Dynamic route template, expo-router `[id]` syntax. */
   bookDetail: "/book/[id]",
+  /** In-app reader for a work's full text. */
+  bookRead: "/read/[id]",
 } as const
 
 export const buildPath = {
@@ -25,4 +27,6 @@ export const buildPath = {
       : ("/browse" as const),
   bookDetail: (bookId: string) =>
     ({ pathname: "/book/[id]" as const, params: { id: bookId } }),
+  bookRead: (bookId: string) =>
+    ({ pathname: "/read/[id]" as const, params: { id: bookId } }),
 } as const

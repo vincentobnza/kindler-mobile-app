@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import * as WebBrowser from "expo-web-browser";
+import { router } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { buildPath } from "@/constants/routes";
 import {
   BORDER_WIDTH,
   COLORS,
@@ -17,6 +18,7 @@ import { LoadingSpinner } from "@/components/feedback/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { SaveButton } from "@/features/library/components/SaveButton";
+import { useReadingProgressStore } from "@/features/reader/stores/reading-progress-store";
 
 import { BookCover } from "../components/BookCover";
 import { useBook } from "../hooks/useBook";
@@ -27,6 +29,7 @@ const MAX_SUBJECTS = 12;
 export function BookDetailScreen({ bookId }: { bookId: string }) {
   const insets = useSafeAreaInsets();
   const { data: book, isPending, isError, error, refetch } = useBook(bookId);
+  const startedPage = useReadingProgressStore((state) => state.pages[bookId]);
 
   if (isError) {
     return (
@@ -88,6 +91,21 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
       ) : null}
 
       <View style={styles.actions}>
+        <Button
+          label={
+            startedPage && startedPage > 0
+              ? UI_LABELS.actions.continueReading
+              : UI_LABELS.actions.startReading
+          }
+          onPress={() => router.push(buildPath.bookRead(book.id))}
+          leftIcon={
+            <Ionicons
+              name="book-outline"
+              size={16}
+              color={COLORS.primaryForeground}
+            />
+          }
+        />
         <SaveButton
           book={{
             id: book.id,
@@ -96,14 +114,6 @@ export function BookDetailScreen({ bookId }: { bookId: string }) {
             coverId: book.coverId,
           }}
           withLabel
-        />
-        <Button
-          variant="outline"
-          label={UI_LABELS.actions.readOnline}
-          onPress={() => WebBrowser.openBrowserAsync(book.openLibraryUrl)}
-          leftIcon={
-            <Ionicons name="open-outline" size={16} color={COLORS.foreground} />
-          }
         />
       </View>
 
