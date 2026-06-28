@@ -5,6 +5,10 @@ discover, search and save books from the [Open Library](https://openlibrary.org)
 No account, no API key, no backend. A faithful native port of the web app's
 warm, editorial **paper & ink** design.
 
+## Demo
+
+![Kindler mobile app demo](assets/mobile_app_demo.gif)
+
 ## Stack
 
 Expo SDK 54 · React Native 0.81 (New Architecture) · TypeScript (strict) ·
